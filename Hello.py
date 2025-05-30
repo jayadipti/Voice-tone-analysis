@@ -9,10 +9,10 @@ from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 import matplotlib.pyplot as plt
 
-# 1. Dataset path
+
 data_path = 'Audio_Speech_Actors_01-24'
 
-# 2. Feature Extraction Function
+
 def extract_features(file_path, sr=22050):
     y, sr = librosa.load(file_path, sr=sr)
     mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
@@ -29,13 +29,13 @@ def extract_features(file_path, sr=22050):
         np.mean(tonnetz.T, axis=0),
     ])
 
-# 3. RAVDESS Emotion Mapping
+
 emotion_dict = {
     '01': 'neutral', '02': 'calm', '03': 'happy', '04': 'sad',
     '05': 'angry', '06': 'fearful', '07': 'disgust', '08': 'surprised'
 }
 
-# 4. Loop over all Actor folders and extract features
+
 features_list = []
 labels = []
 
@@ -57,14 +57,14 @@ for actor_folder in os.listdir(data_path):
             except Exception as e:
                 print(f"Error with file {file_path}: {e}")
 
-# 5. Prepare Data
+
 X = np.array(features_list)
 y = LabelEncoder().fit_transform(labels)
 y = to_categorical(y)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# 6. Build Model
+
 model = Sequential([
     Dense(256, input_shape=(X.shape[1],), activation='relu'),
     Dropout(0.4),
@@ -77,10 +77,10 @@ model = Sequential([
 model.compile(loss='categorical_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
 model.summary()
 
-# 7. Train
+
 history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=150, batch_size=32)
 
-# 8. Plot
+
 plt.plot(history.history['accuracy'], label='Train Accuracy')
 plt.plot(history.history['val_accuracy'], label='Val Accuracy')
 plt.xlabel('Epochs')
@@ -90,5 +90,5 @@ plt.title("Model Accuracy over Epochs")
 plt.grid(True)
 plt.show()
 
-# 9. Save Model
+
 model.save("speech_emotion_recognition_model.h5")

@@ -3,17 +3,16 @@
 # from tensorflow.keras.models import load_model
 # from sklearn.preprocessing import LabelEncoder
 
-# # Load the pre-trained model
+
 # model = load_model("speech_emotion_recognition_model.h5")
 
-# # Emotion labels (must match the order used during training)
+
 # emotion_labels = ['neutral', 'calm', 'happy', 'sad', 'angry', 'fearful', 'disgust', 'surprised']
 
-# # Initialize LabelEncoder
 # le = LabelEncoder()
 # le.fit(emotion_labels)
 
-# # Function to extract audio features
+
 # def extract_features(file_path, sr=22050):
 #     y, sr = librosa.load(file_path, sr=sr)
 #     mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
@@ -31,23 +30,23 @@
 #     ])
 #     return features
 
-# # Path to the input audio file (MP3 or WAV)
+
 # file_path = "scream-with-echo-46585.mp3"
 
-# # Extract and reshape features for model input
+
 # features = extract_features(file_path)
 # features_extracted = features.reshape(1, -1)
 
 # # Ensure the model is compiled before prediction
 # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# # Predict
+
 # prediction = model.predict(features_extracted)
 # predicted_index = np.argmax(prediction)
 # predicted_emotion = le.inverse_transform([predicted_index])[0]
 # confidence = prediction[0][predicted_index] * 100  # Convert to percentage
 
-# # Output result
+
 # print(f"Predicted Emotion: {predicted_emotion}")
 # print(f"Confidence: {confidence:.2f}%")
 
@@ -61,33 +60,28 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 
-# Clear previous TF graph/session state
+
 tf.keras.backend.clear_session()
 np.random.seed(42)
 tf.random.set_seed(42)
 
-# -----------------------------
-# Paths and Model Setup
-# -----------------------------
-AUDIO_FOLDER = 'Audio_Speech_Actors_01-24'  # Change to your folder path
+AUDIO_FOLDER = 'Audio_Speech_Actors_01-24'  
 MODEL_PATH = 'speech_emotion_recognition_model.h5'
 
-# Emotion labels in same order as model training
+
 emotion_labels = ['neutral', 'calm', 'happy', 'sad', 'angry', 'fearful', 'disgust', 'surprised']
 le = LabelEncoder()
 le.fit(emotion_labels)
 
-# Load pre-trained model
+
 model = load_model(MODEL_PATH)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# -----------------------------
-# Feature Extraction Function
-# -----------------------------
+
 def extract_features(file_path, sr=22050):
     y, sr = librosa.load(file_path, sr=sr)
     
-    # Debug: Plot waveform
+    
     print(f"\nProcessing: {file_path}")
     print("Audio Duration:", librosa.get_duration(y=y, sr=sr), "sec")
     plt.figure(figsize=(6, 2))
@@ -109,16 +103,14 @@ def extract_features(file_path, sr=22050):
         np.mean(tonnetz.T, axis=0),
     ])
 
-    # Debug: Feature summary
+
     print("Feature mean:", np.mean(features))
     print("Feature std dev:", np.std(features))
     print("Feature shape:", features.shape)
 
     return features
 
-# -----------------------------
-# Inference Loop Over Files
-# -----------------------------
+
 results = []
 
 for root, dirs, files in os.walk(AUDIO_FOLDER):
@@ -145,9 +137,7 @@ for root, dirs, files in os.walk(AUDIO_FOLDER):
             except Exception as e:
                 print(f"Error with file {file_path}: {e}")
 
-# -----------------------------
-# Save results to CSV
-# -----------------------------
+
 df = pd.DataFrame(results)
 df.to_csv("emotion_predictions.csv", index=False)
 print("\nSaved predictions to emotion_predictions.csv")
